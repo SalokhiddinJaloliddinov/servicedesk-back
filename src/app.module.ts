@@ -8,6 +8,8 @@ import { UserRequestModule } from './user_request/user_request.module';
 import { UserRequestEntity } from './user_request/entities/user_request.entity';
 import { AuthModule } from './auth/auth.module';
 import { AuthEntity } from './auth/entities/auth.entity';
+import { JwtService } from '@nestjs/jwt';
+import { JwtStrategy } from './auth/strategies/jwt.strategy';
 
 @Module({
   imports: [
@@ -26,6 +28,6 @@ import { AuthEntity } from './auth/entities/auth.entity';
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, JwtStrategy],
 })
 export class AppModule {}

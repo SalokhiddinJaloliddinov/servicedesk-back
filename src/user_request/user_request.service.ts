@@ -6,7 +6,6 @@ import { UserRequestEntity } from './entities/user_request.entity';
 import { Repository } from 'typeorm';
 import { HttpService } from '@nestjs/axios';
 import { map } from 'rxjs';
-import { SearchUserRequestDto } from './dto/search-user_request.dto';
 
 require('dotenv').config();
 
@@ -21,7 +20,7 @@ export class UserRequestService {
   create(dto: CreateUserRequestDto) {
     const json_data = {
       operation: 'core/create',
-      comment: 'Synchronization from blah',
+      comment: `SELECT Person WHERE id = ${dto.caller_id}`,
       class: 'UserRequest',
       output_fields: 'id, friendlyname',
       fields: {

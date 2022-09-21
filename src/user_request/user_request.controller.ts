@@ -11,8 +11,6 @@ import {
 import { UserRequestService } from './user_request.service';
 import { CreateUserRequestDto } from './dto/create-user_request.dto';
 import { UpdateUserRequestDto } from './dto/update-user_request.dto';
-import { UndefinedModuleException } from '@nestjs/core/errors/exceptions/undefined-module.exception';
-import { SearchUserRequestDto } from './dto/search-user_request.dto';
 
 @Controller('user-request')
 export class UserRequestController {
