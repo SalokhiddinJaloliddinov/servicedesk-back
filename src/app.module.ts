@@ -10,6 +10,9 @@ import { AuthModule } from './auth/auth.module';
 import { AuthEntity } from './auth/entities/auth.entity';
 import { JwtService } from '@nestjs/jwt';
 import { JwtStrategy } from './auth/strategies/jwt.strategy';
+import { PersonModule } from './person/person.module';
+import { TeamModule } from './team/team.module';
+import { PersonEntity } from './person/entities/person.entity';
 
 @Module({
   imports: [
@@ -20,12 +23,14 @@ import { JwtStrategy } from './auth/strategies/jwt.strategy';
       username: 'root',
       password: '',
       database: 'itop_anorbank',
-      entities: [UserEntity, UserRequestEntity, AuthEntity],
+      entities: [UserEntity, UserRequestEntity, AuthEntity, PersonEntity],
       synchronize: false,
     }),
     UserModule,
     UserRequestModule,
     AuthModule,
+    PersonModule,
+    TeamModule,
   ],
   controllers: [AppController],
   providers: [AppService, JwtStrategy],

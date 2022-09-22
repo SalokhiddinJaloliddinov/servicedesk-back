@@ -1,5 +1,11 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-import { JoinColumn } from 'typeorm/browser';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { PersonEntity } from '../../person/entities/person.entity';
 
 @Entity('priv_user')
 export class AuthEntity {

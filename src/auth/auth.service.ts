@@ -6,6 +6,10 @@ import { JwtService } from '@nestjs/jwt';
 import { Repository } from 'typeorm';
 import { AuthEntity } from './entities/auth.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { PersonEntity } from '../person/entities/person.entity';
+import { PersonService } from '../person/person.service';
+import { isBase32, isBase64, isHexadecimal, isString } from 'class-validator';
+import { Buffer } from 'buffer';
 
 @Injectable()
 export class AuthService {
@@ -13,15 +17,11 @@ export class AuthService {
     @InjectRepository(AuthEntity)
     private repository: Repository<AuthEntity>,
     private readonly jwtService: JwtService,
+    private readonly personService: PersonService,
     private readonly httpService: HttpService,
   ) {}
 
   async findUser(dto) {
-    // const login = await this.repository.findOneBy({ login: dto.login });
-    // const id = await this.repository.findOneBy({ id: dto.id });
-    // if (login === id) {
-    //   return await this.repository.findOneBy({ id: dto.id });
-    // }
     return await this.repository.findOneBy({ id: dto.id });
   }
 
@@ -54,29 +54,25 @@ export class AuthService {
       );
     }
   }
-
-  // async login(dto: LoginAuthDto) {
-  //   const { password, ...userData } = dto;
-  //   const payload = { login: dto.login, sub: dto.password };
-  //   const isAuth = await this.findUser(dto);
-  //   if (isAuth === true) {
-  //     return {
-  //       ...userData,
-  //       access_token: this.jwtService.sign(payload),
-  //     };
-  //   } else {
-  //     throw new UnauthorizedException(
-  //       'Неправильный пароль или имя пользователя',
-  //     );
-  //   }
   // }
 
   async login(dto: LoginAuthDto) {
+    const qb = this.repository.createQueryBuilder('u');
+
     const user = await this.checkUser(dto);
-    const payload = { login: dto.login, sub: user.id };
+    const person = await this.personService.findOne(user.contactid);
+    const payload = {
+      id: user.id,
+      login: user.login,
+      friendlyname: person.friendlyname,
+      person_id: person.id,
+    };
+    delete user.contactid;
+    delete person.picture_data;
     if (user) {
       return {
-        ...user,
+        user,
+        person,
         access_token: this.jwtService.sign(payload),
       };
     } else {
@@ -84,5 +80,7 @@ export class AuthService {
         'Неправильный пароль или имя пользователя',
       );
     }
+
+    // return this.repository.find();
   }
 }
