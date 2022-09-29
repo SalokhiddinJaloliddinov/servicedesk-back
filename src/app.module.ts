@@ -2,8 +2,6 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UserModule } from './user/user.module';
-import { UserEntity } from './user/entities/user.entity';
 import { UserRequestModule } from './user_request/user_request.module';
 import { UserRequestEntity } from './user_request/entities/user_request.entity';
 import { AuthModule } from './auth/auth.module';
@@ -23,10 +21,9 @@ import { PersonEntity } from './person/entities/person.entity';
       username: 'root',
       password: '',
       database: 'itop_anorbank',
-      entities: [UserEntity, UserRequestEntity, AuthEntity, PersonEntity],
+      entities: [UserRequestEntity, AuthEntity, PersonEntity],
       synchronize: false,
     }),
-    UserModule,
     UserRequestModule,
     AuthModule,
     PersonModule,

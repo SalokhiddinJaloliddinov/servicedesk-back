@@ -32,12 +32,4 @@ export class PersonService {
   findOne(id: number) {
     return this.repository.findOneBy({ id: id });
   }
-
-  // update(id: number, updatePersonDto: UpdatePersonDto) {
-  //   return `This action updates a #${id} person`;
-  // }
-  //
-  // remove(id: number) {
-  //   return `This action removes a #${id} person`;
-  // }
 }

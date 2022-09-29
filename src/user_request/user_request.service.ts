@@ -49,7 +49,7 @@ export class UserRequestService {
   async findAll() {
     const qb = this.repository.createQueryBuilder();
 
-    qb.limit(20);
+    qb.limit(100);
     qb.orderBy({
       id: 'DESC',
     });
