@@ -29,6 +29,7 @@ export class UserRequestController {
     return this.userRequestService.create(createUserRequestDto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   findAll() {
     return this.userRequestService.findAll();

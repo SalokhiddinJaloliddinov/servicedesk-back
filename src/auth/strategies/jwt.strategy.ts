@@ -15,18 +15,22 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   async validate(payload: any) {
     const userData = {
-      id: payload.sub,
+      id: payload.id,
       login: payload.login,
+      contactid: payload.person_id,
+      arg: payload.arg,
     };
     const user = await this.authService.findUser(userData);
+    const decrypt = await this.authService.decrypt(userData);
     console.log(user);
-    if (!user) {
+    console.log(decrypt);
+    if (!user || !decrypt) {
       throw new UnauthorizedException('Нету прав на эту страницу');
     }
     return {
       login: user.login,
       user_id: user.id,
-      person_id: user.contactid,
+      contact_id: user.contactid,
       status: user.status,
     };
   }

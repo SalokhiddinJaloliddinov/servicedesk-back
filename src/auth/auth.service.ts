@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { AuthEntity } from './entities/auth.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PersonService } from '../person/person.service';
+const argon2 = require('argon2');
 
 @Injectable()
 export class AuthService {
@@ -19,7 +20,21 @@ export class AuthService {
   ) {}
 
   async findUser(dto) {
-    return await this.repository.findOneBy({ id: dto.id });
+    // console.warn(dto);
+    return await this.repository.findOneBy({
+      id: dto.id,
+      login: dto.login,
+      contactid: dto.contactid,
+      status: 'enabled',
+    });
+  }
+
+  async decrypt(dto) {
+    if (!dto.arg) {
+      return false;
+    }
+    const user = await this.findUser(dto);
+    return await argon2.verify(dto.arg, user.login);
   }
 
   async checkUser(dto: LoginAuthDto) {
@@ -56,6 +71,7 @@ export class AuthService {
     const qb = this.repository.createQueryBuilder('u');
 
     const user = await this.checkUser(dto);
+    const arg = await argon2.hash(user.login);
     // console.log(user);
     const person = await this.personService.findOne(user.contactid);
     console.log(person);
@@ -64,6 +80,7 @@ export class AuthService {
       login: user.login,
       friendlyname: person.friendlyname,
       person_id: person.id,
+      arg: arg,
     };
     delete user.contactid;
     delete person.picture_data;
