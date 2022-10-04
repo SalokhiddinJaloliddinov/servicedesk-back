@@ -2,6 +2,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from '../auth.service';
+import { Buffer } from 'buffer';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -21,17 +22,25 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       arg: payload.arg,
     };
     const user = await this.authService.findUser(userData);
-    const decrypt = await this.authService.decrypt(userData);
-    console.log(user);
-    console.log(decrypt);
-    if (!user || !decrypt) {
-      throw new UnauthorizedException('Нету прав на эту страницу');
+    if (user) {
+      const person = await this.authService.person(user.contactid);
+      console.log(person);
+      const decrypt = await this.authService.decrypt(userData);
+      console.log(user);
+      console.log(decrypt);
+      if (!user) {
+        throw new UnauthorizedException('Нету прав на эту страницу');
+      } else if (!decrypt) {
+        throw new UnauthorizedException('Нету прав на эту страницу');
+      } else {
+        return {
+          login: user.login,
+          user_id: user.id,
+          contact_id: user.contactid,
+          status: user.status,
+          picture: Buffer.from(person.picture_data).toString('base64'),
+        };
+      }
     }
-    return {
-      login: user.login,
-      user_id: user.id,
-      contact_id: user.contactid,
-      status: user.status,
-    };
   }
 }

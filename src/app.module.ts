@@ -11,6 +11,8 @@ import { JwtStrategy } from './auth/strategies/jwt.strategy';
 import { PersonModule } from './person/person.module';
 import { TeamModule } from './team/team.module';
 import { PersonEntity } from './person/entities/person.entity';
+import { ServiceModule } from './service/service.module';
+import { ServiceEntity } from './service/entities/service.entity';
 
 @Module({
   imports: [
@@ -21,13 +23,14 @@ import { PersonEntity } from './person/entities/person.entity';
       username: 'root',
       password: '',
       database: 'itop_anorbank',
-      entities: [UserRequestEntity, AuthEntity, PersonEntity],
+      entities: [UserRequestEntity, AuthEntity, PersonEntity, ServiceEntity],
       synchronize: false,
     }),
     UserRequestModule,
     AuthModule,
     PersonModule,
     TeamModule,
+    ServiceModule,
   ],
   controllers: [AppController],
   providers: [AppService, JwtStrategy],

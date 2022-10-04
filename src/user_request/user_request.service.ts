@@ -3,9 +3,12 @@ import { CreateUserRequestDto } from './dto/create-user_request.dto';
 import { UpdateUserRequestDto } from './dto/update-user_request.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserRequestEntity } from './entities/user_request.entity';
-import { Repository } from 'typeorm';
+import { Brackets, Repository } from 'typeorm';
 import { HttpService } from '@nestjs/axios';
 import { map } from 'rxjs';
+import { PersonService } from '../person/person.service';
+import { SearchUserRequestDto } from './dto/search-user_request.dto';
+import { limits } from 'argon2';
 
 require('dotenv').config();
 
@@ -15,16 +18,19 @@ export class UserRequestService {
     @InjectRepository(UserRequestEntity)
     private repository: Repository<UserRequestEntity>,
     private readonly httpService: HttpService,
+    private readonly personService: PersonService,
   ) {}
 
-  create(dto: CreateUserRequestDto) {
+  async create(dto: CreateUserRequestDto, caller_id) {
+    console.log(caller_id);
+    const person = await this.personService.findOne(caller_id);
     const json_data = {
       operation: 'core/create',
-      comment: `SELECT Person WHERE id = ${dto.caller_id}`,
+      comment: person.friendlyname,
       class: 'UserRequest',
       output_fields: 'id, friendlyname',
       fields: {
-        caller_id: dto.caller_id,
+        caller_id: caller_id,
         org_id: 'SELECT Organization WHERE name = "Anorbank"',
         title: dto.title,
         description: dto.description,
@@ -46,28 +52,51 @@ export class UserRequestService {
     return req.pipe(map((response) => response.data));
   }
 
-  async findAll() {
+  async findAllAsCaller(contact_id, pagination: SearchUserRequestDto) {
     const qb = this.repository.createQueryBuilder();
-
-    qb.limit(100);
+    const take = pagination.limit ? Number(pagination.limit) : null;
+    const page = pagination.page ? Number(pagination.page) : null;
+    qb.take(take ? take : 10);
+    qb.skip(page ? page * take - take : 0);
     qb.orderBy({
       id: 'DESC',
     });
-    const [items, total] = await qb.getManyAndCount();
+    const [items, total] = await qb
+      .where({ caller_id: contact_id })
+      .getManyAndCount();
     return { items, total };
   }
 
-  async search(filter) {
+  async findAllAs(contact_id, pagination: SearchUserRequestDto) {
     const qb = this.repository.createQueryBuilder();
-    qb.orWhere(`id LIKE '%${filter}%'`);
-    qb.orWhere(`title LIKE '%${filter}%'`);
-    qb.orWhere(`description LIKE '%${filter}%'`);
-    qb.orWhere(`ref LIKE '%${filter}%'`);
+    const take = pagination.limit ? Number(pagination.limit) : 10;
+    const page = pagination.page ? Number(pagination.page) : undefined;
+    const search = pagination.search ? pagination.search : undefined;
+    console.log(take, page);
+    qb.take(take);
+    qb.skip(page ? page * take - take : 0);
     qb.orderBy({
       id: 'DESC',
     });
-
-    const [items, total] = await qb.getManyAndCount();
+    const [items, total] = await qb
+      .where(
+        pagination.isCaller
+          ? { caller_id: contact_id }
+          : pagination.isAgent
+          ? { agent_id: contact_id }
+          : '',
+      )
+      .andWhere(
+        new Brackets((qb1) => {
+          qb1
+            .where(search ? `title LIKE '%${search}%'` : '1 = 1')
+            .orWhere(search ? `ref LIKE '%${search}%'` : '1 = 1')
+            .orWhere(search ? `description LIKE '%${search}%'` : '1 = 1')
+            .orWhere(search ? `id LIKE '%${search}%'` : '1 = 1');
+        }),
+      )
+      .getManyAndCount();
+    console.log(qb.getSql());
     return { items, total };
   }
 

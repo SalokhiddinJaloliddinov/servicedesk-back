@@ -23,27 +23,24 @@ export class UserRequestController {
   @UseGuards(JwtAuthGuard)
   @Post()
   create(
-    @User() user: AuthEntity,
+    @User() userId: number,
     @Body() createUserRequestDto: CreateUserRequestDto,
   ) {
-    return this.userRequestService.create(createUserRequestDto);
+    console.log(userId);
+    return this.userRequestService.create(createUserRequestDto, userId);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  findAll() {
-    return this.userRequestService.findAll();
+  asCaller(@User() userId: number, @Query() page: any) {
+    return this.userRequestService.findAllAs(userId, page);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userRequestService.findOne(+id);
-  }
-
-  @Get('/search')
-  search(@Query('filter') filter: string) {
-    return this.userRequestService.search(filter);
-  }
+  // @UseGuards(JwtAuthGuard)
+  // @Get('/agent')
+  // asAgent(@User() userId: number, @Query() page: any) {
+  //   return this.userRequestService.findAllAsAgent(userId, page);
+  // }
 
   @Patch(':id')
   update(

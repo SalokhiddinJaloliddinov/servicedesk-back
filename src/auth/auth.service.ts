@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { AuthEntity } from './entities/auth.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PersonService } from '../person/person.service';
+
 const argon2 = require('argon2');
 
 @Injectable()
@@ -66,6 +67,11 @@ export class AuthService {
     }
   }
   // }
+
+  async person(id) {
+    return await this.personService.findOne(id);
+    // console.log(person);
+  }
 
   async login(dto: LoginAuthDto) {
     const qb = this.repository.createQueryBuilder('u');

@@ -1,7 +1,23 @@
+import { IsBoolean, IsOptional, IsString } from 'class-validator';
+
 export class SearchUserRequestDto {
-  ref: string;
-  title: string;
-  description: string;
-  id: number;
-  agent_id: number;
+  @IsString()
+  @IsOptional()
+  page: string;
+
+  @IsString()
+  @IsOptional()
+  limit: string;
+
+  @IsString()
+  @IsOptional()
+  isCaller: string;
+
+  @IsString()
+  @IsOptional()
+  isAgent: string;
+
+  @IsString()
+  @IsOptional()
+  search: string;
 }

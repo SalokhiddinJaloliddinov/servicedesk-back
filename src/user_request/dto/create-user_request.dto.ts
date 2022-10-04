@@ -5,7 +5,4 @@ export class CreateUserRequestDto {
   title: string;
 
   description: string;
-
-  @IsNumber()
-  caller_id: number;
 }
