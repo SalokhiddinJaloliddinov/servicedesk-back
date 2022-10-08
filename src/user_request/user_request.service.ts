@@ -6,9 +6,8 @@ import { UserRequestEntity } from './entities/user_request.entity';
 import { Brackets, Repository } from 'typeorm';
 import { HttpService } from '@nestjs/axios';
 import { map } from 'rxjs';
-import { PersonService } from '../person/person.service';
 import { SearchUserRequestDto } from './dto/search-user_request.dto';
-import { limits } from 'argon2';
+import { ContactService } from '../contact/contact.service';
 
 require('dotenv').config();
 
@@ -18,12 +17,12 @@ export class UserRequestService {
     @InjectRepository(UserRequestEntity)
     private repository: Repository<UserRequestEntity>,
     private readonly httpService: HttpService,
-    private readonly personService: PersonService,
+    private readonly personService: ContactService,
   ) {}
 
   async create(dto: CreateUserRequestDto, caller_id) {
     console.log(caller_id);
-    const person = await this.personService.findOne(caller_id);
+    const person = await this.personService.findContact(caller_id, 'Person');
     const json_data = {
       operation: 'core/create',
       comment: person.friendlyname,

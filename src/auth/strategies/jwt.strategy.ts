@@ -38,7 +38,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
           user_id: user.id,
           contact_id: user.contactid,
           status: user.status,
-          picture: Buffer.from(person.picture_data).toString('base64'),
+          role: [1, 2, 3],
         };
       }
     }

@@ -32,8 +32,8 @@ export class UserRequestController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  asCaller(@User() userId: number, @Query() page: any) {
-    return this.userRequestService.findAllAs(userId, page);
+  asCaller(@User() userId: number, @Query() search: any) {
+    return this.userRequestService.findAllAs(userId, search);
   }
 
   // @UseGuards(JwtAuthGuard)

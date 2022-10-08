@@ -3,16 +3,21 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserRequestModule } from './user_request/user_request.module';
-import { UserRequestEntity } from './user_request/entities/user_request.entity';
 import { AuthModule } from './auth/auth.module';
 import { AuthEntity } from './auth/entities/auth.entity';
-import { JwtService } from '@nestjs/jwt';
 import { JwtStrategy } from './auth/strategies/jwt.strategy';
-import { PersonModule } from './person/person.module';
-import { TeamModule } from './team/team.module';
-import { PersonEntity } from './person/entities/person.entity';
 import { ServiceModule } from './service/service.module';
 import { ServiceEntity } from './service/entities/service.entity';
+import { TicketModule } from './ticket/ticket.module';
+import { IncidentEntity } from './ticket/entities/incident.entity';
+import { UserRequestEntity } from './ticket/entities/user_request.entity';
+import { DeliveryRequestEntity } from './ticket/entities/delivery_request.entity';
+import { ContactModule } from './contact/contact.module';
+import { ContactEntity } from './contact/entities/contact.entity';
+import { PersonEntity } from './contact/entities/person.entity';
+import { RolesModule } from './roles/roles.module';
+import { LnkRoleToUserEntity } from './roles/entities/lnkRoleToUser.entity';
+import { RolesEntity } from './roles/entities/roles.entity';
 
 @Module({
   imports: [
@@ -23,14 +28,25 @@ import { ServiceEntity } from './service/entities/service.entity';
       username: 'root',
       password: '',
       database: 'itop_anorbank',
-      entities: [UserRequestEntity, AuthEntity, PersonEntity, ServiceEntity],
+      entities: [
+        UserRequestEntity,
+        AuthEntity,
+        ServiceEntity,
+        IncidentEntity,
+        DeliveryRequestEntity,
+        ContactEntity,
+        PersonEntity,
+        LnkRoleToUserEntity,
+        RolesEntity,
+      ],
       synchronize: false,
     }),
     UserRequestModule,
     AuthModule,
-    PersonModule,
-    TeamModule,
     ServiceModule,
+    TicketModule,
+    ContactModule,
+    RolesModule,
   ],
   controllers: [AppController],
   providers: [AppService, JwtStrategy],

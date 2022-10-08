@@ -6,7 +6,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Repository } from 'typeorm';
 import { AuthEntity } from './entities/auth.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { PersonService } from '../person/person.service';
+import { ContactService } from '../contact/contact.service';
 
 const argon2 = require('argon2');
 
@@ -16,7 +16,7 @@ export class AuthService {
     @InjectRepository(AuthEntity)
     private repository: Repository<AuthEntity>,
     private readonly jwtService: JwtService,
-    private readonly personService: PersonService,
+    private readonly personService: ContactService,
     private readonly httpService: HttpService,
   ) {}
 
@@ -79,7 +79,10 @@ export class AuthService {
     const user = await this.checkUser(dto);
     const arg = await argon2.hash(user.login);
     // console.log(user);
-    const person = await this.personService.findOne(user.contactid);
+    const person = await this.personService.findContact(
+      user.contactid,
+      'Person',
+    );
     console.log(person);
     const payload = {
       id: user.id,
@@ -89,7 +92,6 @@ export class AuthService {
       arg: arg,
     };
     delete user.contactid;
-    delete person.picture_data;
     if (user) {
       return {
         user,

@@ -5,7 +5,7 @@ import { HttpModule } from '@nestjs/axios';
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthEntity } from './entities/auth.entity';
-import { PersonModule } from '../person/person.module';
+import { ContactModule } from '../contact/contact.module';
 
 @Module({
   imports: [
@@ -17,7 +17,7 @@ import { PersonModule } from '../person/person.module';
         expiresIn: '10d',
       },
     }),
-    PersonModule,
+    ContactModule,
   ],
   controllers: [AuthController],
   providers: [AuthService],
