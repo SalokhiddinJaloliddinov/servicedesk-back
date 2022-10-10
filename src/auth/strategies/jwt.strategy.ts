@@ -24,7 +24,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const user = await this.authService.findUser(userData);
     if (user) {
       const person = await this.authService.person(user.contactid);
-      console.log(person);
+      console.log(person, 'maymun');
       const decrypt = await this.authService.decrypt(userData);
       console.log(user);
       console.log(decrypt);
@@ -37,6 +37,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
           login: user.login,
           user_id: user.id,
           contact_id: user.contactid,
+          person_friendlyname: person.friendlyname,
           status: user.status,
           role: [1, 2, 3],
         };

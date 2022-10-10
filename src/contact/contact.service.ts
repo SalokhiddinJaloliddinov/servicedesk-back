@@ -85,7 +85,7 @@ export class ContactService {
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} contact`;
+    return this.personRepo.findOneBy({ id: id });
   }
 
   update(id: number, updateContactDto: UpdateContactDto) {

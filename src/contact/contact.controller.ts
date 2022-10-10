@@ -14,7 +14,7 @@ import { CreateContactDto } from './dto/create-contact.dto';
 import { UpdateContactDto } from './dto/update-contact.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
-@UseGuards(JwtAuthGuard)
+// @UseGuards(JwtAuthGuard)
 @Controller('contact')
 export class ContactController {
   constructor(private readonly contactService: ContactService) {}
