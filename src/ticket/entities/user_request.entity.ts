@@ -37,4 +37,7 @@ export class UserRequestEntity {
 
   @Column()
   status: string;
+
+  @Column()
+  finalclass: string;
 }

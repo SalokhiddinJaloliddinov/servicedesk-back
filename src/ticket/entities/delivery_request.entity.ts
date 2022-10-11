@@ -37,4 +37,7 @@ export class DeliveryRequestEntity {
 
   @Column()
   status: string;
+
+  @Column()
+  finalclass: string;
 }

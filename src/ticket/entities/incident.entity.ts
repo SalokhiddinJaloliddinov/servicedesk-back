@@ -37,4 +37,7 @@ export class IncidentEntity {
 
   @Column()
   status: string;
+
+  @Column()
+  finalclass: string;
 }
