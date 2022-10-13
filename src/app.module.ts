@@ -18,6 +18,7 @@ import { PersonEntity } from './contact/entities/person.entity';
 import { RolesModule } from './roles/roles.module';
 import { LnkRoleToUserEntity } from './roles/entities/lnkRoleToUser.entity';
 import { RolesEntity } from './roles/entities/roles.entity';
+import { ServiceSubcategoryEntity } from './service/entities/service_subcategory.entity';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { RolesEntity } from './roles/entities/roles.entity';
         PersonEntity,
         LnkRoleToUserEntity,
         RolesEntity,
+        ServiceSubcategoryEntity,
       ],
       synchronize: false,
     }),

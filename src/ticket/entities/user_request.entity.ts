@@ -27,7 +27,19 @@ export class UserRequestEntity {
   agent_id: number;
 
   @Column()
-  team_name: string;
+  team_id_friendlyname: string;
+
+  @Column()
+  team_id: number;
+
+  @Column()
+  service_id: number;
+
+  @Column()
+  service_name: string;
+
+  @Column()
+  servicesubcategory_id: number;
 
   @Column()
   servicesubcategory_name: string;
@@ -40,4 +52,7 @@ export class UserRequestEntity {
 
   @Column()
   finalclass: string;
+
+  @Column()
+  public_log: string;
 }

@@ -23,17 +23,19 @@ export class UserRequestController {
   @UseGuards(JwtAuthGuard)
   @Post()
   create(
-    @User() userId: number,
+    @User() userData: any,
     @Body() createUserRequestDto: CreateUserRequestDto,
   ) {
-    console.log(userId);
-    return this.userRequestService.create(createUserRequestDto, userId);
+    return this.userRequestService.create(
+      createUserRequestDto,
+      userData.contact_id,
+    );
   }
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  asCaller(@User() userId: number, @Query() search: any) {
-    return this.userRequestService.findAllAs(userId, search);
+  asCaller(@User() userData: any, @Query() search: any) {
+    return this.userRequestService.findAllAs(userData.contact_id, search);
   }
 
   // @UseGuards(JwtAuthGuard)

@@ -27,17 +27,58 @@ export class IncidentEntity {
   agent_id: number;
 
   @Column()
-  team_name: string;
+  team_id_friendlyname: string;
+
+  @Column()
+  team_id: number;
+
+  @Column()
+  service_id: number;
+
+  @Column()
+  service_name: string;
+
+  @Column()
+  servicesubcategory_id: number;
 
   @Column()
   servicesubcategory_name: string;
-
-  @Column({ type: 'datetime' })
-  last_update: Date;
 
   @Column()
   status: string;
 
   @Column()
   finalclass: string;
+
+  //  Dates
+  @Column({ type: 'datetime' })
+  last_update: Date;
+
+  @Column({ type: 'datetime' })
+  start_date: Date;
+
+  @Column({ type: 'datetime' })
+  assignment_date: Date;
+
+  @Column({ type: 'datetime' })
+  resolution_date: Date;
+
+  @Column({ type: 'datetime' })
+  last_pending_date: Date;
+
+  @Column({ type: 'datetime' })
+  close_date: Date;
+
+  // Reasons
+  @Column()
+  reassign_reason: string;
+
+  @Column()
+  dispatch_reason: string;
+
+  @Column()
+  pending_reason: string;
+
+  @Column()
+  escalation_reason: string;
 }

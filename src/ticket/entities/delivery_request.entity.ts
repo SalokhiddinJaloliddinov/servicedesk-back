@@ -27,7 +27,19 @@ export class DeliveryRequestEntity {
   agent_id: number;
 
   @Column()
-  team_name: string;
+  team_id_friendlyname: string;
+
+  @Column()
+  team_id: number;
+
+  @Column()
+  service_id: number;
+
+  @Column()
+  service_name: string;
+
+  @Column()
+  servicesubcategory_id: number;
 
   @Column()
   servicesubcategory_name: string;

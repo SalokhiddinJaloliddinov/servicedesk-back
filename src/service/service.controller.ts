@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { ServiceService } from './service.service';
 import { CreateServiceDto } from './dto/create-service.dto';
 import { UpdateServiceDto } from './dto/update-service.dto';
@@ -30,5 +38,15 @@ export class ServiceController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.serviceService.remove(+id);
+  }
+}
+
+@Controller('servicesubcategory')
+export class SubcategoryController {
+  constructor(private readonly serviceService: ServiceService) {}
+
+  @Get('')
+  findSubAll() {
+    return this.serviceService.findSubAll();
   }
 }

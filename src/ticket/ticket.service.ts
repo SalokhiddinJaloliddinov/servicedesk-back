@@ -5,10 +5,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { IncidentEntity } from './entities/incident.entity';
 import { Brackets, Repository } from 'typeorm';
 import { UserRequestEntity } from './entities/user_request.entity';
-import { map } from 'rxjs';
+import { lastValueFrom, map } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
 import { DeliveryRequestEntity } from './entities/delivery_request.entity';
 import { ContactService } from '../contact/contact.service';
+import { CreatePublicLogDto } from './dto/create-publicLog.dto';
+import { response } from 'express';
 
 @Injectable()
 export class TicketService {
@@ -31,7 +33,7 @@ export class TicketService {
       class: dto.class,
       output_fields: dto.output_fields
         ? dto.output_fields
-        : 'id, friendlyname, caller_id_friendlyname',
+        : 'id, friendlyname, caller_id_friendlyname, finalclass',
       fields: {
         caller_id: contact_id,
         org_id: 'SELECT Organization WHERE name = "Anorbank"',
@@ -72,7 +74,6 @@ export class TicketService {
         return this.search(userRequest, filter);
       case 'DeliveryRequest':
         const deliveryRequest = this.deliveryRequestRepo.createQueryBuilder();
-        console.log(filter.search);
         return this.search(deliveryRequest, filter);
     }
   }
@@ -86,13 +87,34 @@ export class TicketService {
     qb.orderBy({
       id: 'DESC',
     });
-    const [items, total] = await qb
+    const items: IncidentEntity[] = await qb
       .where(search ? `title LIKE '%${search}%'` : '1 = 1')
       .orWhere(search ? `ref LIKE '%${search}%'` : '1 = 1')
       .orWhere(search ? `description LIKE '%${search}%'` : '1 = 1')
       .orWhere(search ? `id LIKE '%${search}%'` : '1 = 1')
-      .getManyAndCount();
-    return { items, total };
+      .getMany();
+    const total = await qb.getCount();
+
+    // response attributes
+    const list = [
+      'ref',
+      'id',
+      'title',
+      'caller_id',
+      'caller_id_friendlyname',
+      'finalclass',
+      'status',
+      'start_date',
+    ];
+    items.map((ticket) =>
+      Object.keys(ticket).forEach(
+        (key) => list.includes(key) || delete ticket[key],
+      ),
+    );
+    return {
+      items,
+      total,
+    };
   }
 
   findOne(id: number, type: string) {
@@ -115,5 +137,69 @@ export class TicketService {
 
   remove(id: number) {
     return `This action removes a #${id} ticket`;
+  }
+
+  async publicLog(id: number, finalclass: string) {
+    const json_data = {
+      operation: 'core/get',
+      class: finalclass,
+      key: id,
+      output_fields: 'public_log',
+    };
+    const req = await this.httpService.get(
+      process.env.ITOP_URL +
+        '/webservices/rest.php?version=1.3&json_data=' +
+        JSON.stringify(json_data),
+      {
+        auth: {
+          username: process.env.ITOP_USERNAME,
+          password: process.env.ITOP_PASSWORD,
+        },
+      },
+    );
+
+    const res = await lastValueFrom(req.pipe(map((response) => response.data)));
+    if (!res) {
+      throw new NotFoundException();
+    }
+    const objects = Object.values(res.objects)[0];
+    // @ts-ignore
+    const public_logs = objects.fields.public_log.entries;
+    return public_logs;
+  }
+
+  async addPublicLog(dto: CreatePublicLogDto, user_id: number) {
+    const json_data = {
+      operation: 'core/update',
+      comment: 'Comment',
+      class: dto.finalclass,
+      key: dto.key,
+      output_fields: 'public_log',
+      fields: {
+        public_log: {
+          add_item: {
+            user_id: user_id,
+            message: dto.message,
+            format: 'text',
+          },
+        },
+      },
+    };
+    console.log(json_data);
+
+    const req = this.httpService.post(
+      process.env.ITOP_URL +
+        '/webservices/rest.php?version=1.3&json_data=' +
+        JSON.stringify(json_data),
+      {},
+      {
+        auth: {
+          username: process.env.ITOP_USERNAME,
+          password: process.env.ITOP_PASSWORD,
+        },
+      },
+    );
+    const res = await lastValueFrom(req.pipe(map((response) => response.data)));
+    return res.objects;
   }
 }

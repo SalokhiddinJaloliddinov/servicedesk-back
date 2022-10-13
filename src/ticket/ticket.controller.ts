@@ -15,10 +15,9 @@ import { CreateTicketDto } from './dto/create-ticket.dto';
 import { UpdateTicketDto } from './dto/update-ticket.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { User } from '../decorators/user.decorators';
-import { IpAddress } from '../decorators/ip.decorators';
 
-import { Ip } from '@nestjs/common';
 import { chechRole } from '../decorators/checkRole.decorators';
+import { CreatePublicLogDto } from './dto/create-publicLog.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('ticket')
@@ -26,8 +25,16 @@ export class TicketController {
   constructor(private readonly ticketService: TicketService) {}
 
   @Post()
-  create(@Body() createTicketDto: CreateTicketDto, @User() userId: number) {
-    return this.ticketService.create(createTicketDto, userId);
+  create(@Body() createTicketDto: CreateTicketDto, @User() userData: any) {
+    return this.ticketService.create(createTicketDto, userData.contact_id);
+  }
+
+  @Post('/public-log')
+  addComment(
+    @Body() createCommentDto: CreatePublicLogDto,
+    @User() userData: any,
+  ) {
+    return this.ticketService.addPublicLog(createCommentDto, userData.user_id);
   }
 
   @Get('/incident')
@@ -57,6 +64,18 @@ export class TicketController {
   @Get('/delivery-request/:id')
   findOneDeliveryRequest(@Param('id') id: string) {
     return this.ticketService.findOne(+id, 'DeliveryRequest');
+  }
+  @Get('/incident/:id/public-log')
+  publicLogIncident(@Param('id') id: string) {
+    return this.ticketService.publicLog(+id, 'Incident');
+  }
+  @Get('/user-request/:id/public-log')
+  publicLogUserRequest(@Param('id') id: string) {
+    return this.ticketService.publicLog(+id, 'UserRequest');
+  }
+  @Get('/delivery-request/:id/public-log')
+  publicLogDeliveryRequest(@Param('id') id: string) {
+    return this.ticketService.publicLog(+id, 'DeliveryRequest');
   }
 
   @Patch(':id')

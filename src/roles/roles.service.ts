@@ -6,6 +6,7 @@ import { RolesEntity } from './entities/roles.entity';
 import { Repository } from 'typeorm';
 import { RolesController } from './roles.controller';
 import { LnkRoleToUserEntity } from './entities/lnkRoleToUser.entity';
+import { response } from 'express';
 
 @Injectable()
 export class RolesService {
@@ -20,7 +21,8 @@ export class RolesService {
   }
 
   async findAll() {
-    return this.lnkRoleToUserRepo.find({ where: { userid: 11 } });
+    const data = await this.lnkRoleToUserRepo.find({ where: { userid: 11 } });
+    return data.map((response) => response.profileid);
   }
 
   findOne(id: number) {
